@@ -2,11 +2,14 @@
 Camera object
 """
 
-class Camera:
+class Camera(object):
 
-    def __init__(self, x1 = 0, y1 = 0, x2 = 0, y2 = 0):
+    def __init__(self, x1 = 0, y1 = 0, x2 = 0, y2 = 0, detected = True, name=None):
         self.point1 = (x1,y1)
         self.point2 = (x2,y2)
+        self.detected = detected
+
+        self.name = name
 
     def getPoint1(self):
         return self.point1
@@ -32,6 +35,11 @@ class Camera:
 
     def __str__(self):
         return "Point 1 = "+str(self.point1)+", Point 2 = "+str(self.point2)
+    def __repr__(self):
+        if self.name is not None:
+            return self.name
+        else:
+            return 'No name'
 
 if __name__ == "__main__":
 
