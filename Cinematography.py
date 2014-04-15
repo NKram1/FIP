@@ -6,6 +6,8 @@ Authors: Noah Kram, Anna Dining
 """
 #import atem_control as bm
 from Camera import Camera
+import socket
+
 class Cinematography:
     
     defaultAngle = 2
@@ -22,9 +24,11 @@ class Cinematography:
         """
         self.currentCamera = 1
         self.previousCamera = 1
-        angles = {1:2, 2:2, 3:2, 4:2}
-
-        cam1 = Camera()
+        self.angles = {1:2, 2:2, 3:2, 4:2}
+	self.motorIP = {1:('192.21.58.202',8094),2:('more_numbers',8095),
+		3:('x':8096), 4:('y',8097)}
+        
+	cam1 = Camera()
         cam2 = Camera()
         cam3 = Camera()
         cam4 = Camera()
@@ -37,7 +41,7 @@ class Cinematography:
         #self.mcsCams = tuple(mcsCams)
         self.mcsCams = mcscams
 
-
+    
         
     def camera_ranks(self):
         """
@@ -100,12 +104,34 @@ class Cinematography:
         return bestAngle
 
     def pan_camera(self, position, cam):
+        ## position: best pan angle
+        ## cPos: current pan position
+        cPos = self.angles[cam]
         if position < 1 or position > 3:
             raise ValueError(str(position) + " is not a valid position") 
-        if position != self.angles[cam]:
-            self.angles[cam] = position
-            pass
-            #to be filled with servo connectino code later. Maybe try except?
+        elif position != cPos:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect(self.motorIPs[cam])
+            message = ''
+            if cPos == 1:
+                if position == 2:
+                    message = 'True:Left:1'
+                elif position == 3:
+                    message = 'True:Left:2'
+            if cPos == 2:
+                if position == 1:
+                    message = 'True:Right:1'
+                elif position == 3:
+                    message = 'True:Left:1'
+
+            if cPos == 3:
+                if position == 1:
+                    message = 'True:Right:2'
+                elif position == 2:
+                    message = 'True:Right:1'
+            
+            sock.send(message.encode())
+
         
 if __name__ == '__main__':
 
